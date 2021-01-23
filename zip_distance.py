@@ -94,8 +94,8 @@ def search_new_zip(searching_zip_code, campus_array):
             zip_code[f"{single_campus}_DIST"]=current_distance
             zip_code[f"{single_campus}_TIME"]=current_duration
 
-            if current_distance < smallest_distance:
-                smallest_distance = current_distance
+            if current_duration < smallest_distance:
+                smallest_distance = current_duration
                 closest_campus = single_campus
         zip_code["Campus"]=closest_campus
 
@@ -121,14 +121,15 @@ def main():
     for index in range(len(df_input_address)):
         each_line = df_input_address.T.loc["Address"][index]
         f_zip_code = re.findall(r'.*(\d{5}).*?$', each_line)
-        #f_zip_code = int(f_zip_code[-1])
+        f_zip_code = int(f_zip_code[-1])
+
         try:
         # Check if we've seen this zip code before in the input dataset
-            pandas_campus = df_zips_seen.loc[f_zip_code]['Campus']
-            proper_campus = pandas_campus.iloc[0]
+            proper_campus = df_zips_seen.loc[f_zip_code]['Campus']
+            # proper_campus = pandas_campus.iloc[0]
             
         except KeyError:
-            proper_campus = search_new_zip(f_zip_code[-1], ["NSJ", "SSJ", "SUN", "FRE"])
+            proper_campus = search_new_zip(str(f_zip_code), ["NSJ", "SSJ", "SUN", "FRE"])
 
         # Now we have updated the database with the newest info
         member_campus = df_input_address.iloc[index]["Campus"]= proper_campus
