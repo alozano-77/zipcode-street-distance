@@ -58,7 +58,7 @@ def check_address(members_address, campus):
             json_data = r.json()
 
             if json_data.get("status") == "REQUEST_DENIED":
-                print("API Key is broken, please fix it")
+                print("API Key is broken or google can't find the address, please fix it")
                 sys.exit()
             else:
                 print(json_data.get("rows"))
@@ -75,7 +75,7 @@ def search_new_zip(searching_zip_code, campus_array):
     in_california = check_if_california(searching_zip_code)
     
     campus_dict =  {"NSJ": "1180 Murphy Ave San Jose, CA 95131",
-                    "SSJ": "6150 Snell Ave San Jose, CA 95123",
+                    "SSJ": "100 Skyway Dr, San Jose, CA 95111",
                     "SUN": "1145 E. Arques Ave Sunnyvale, CA 94085",
                     "FRE": "48989 Milmont Dr, Fremont, CA 94538"}
 
