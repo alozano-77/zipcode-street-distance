@@ -20,7 +20,7 @@ APIKEY = "BVeRvyYl9Yecr8Oe1tZZrOrQg0Gn15zrKxGa2vl"
 distance_dict = {}
 zips_seen = []
 df_zips_seen = pd.read_csv('datasets/input_zip_dist.csv', index_col=["Zip"])
-df_input_address = pd.read_csv('datasets/sample.csv', index_col=["Email"])
+df_input_address = pd.read_csv('echo/newaddresssince1232021.csv', index_col=["Email"])
 
 
 def check_if_california(zip_code):
