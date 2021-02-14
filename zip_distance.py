@@ -3,8 +3,8 @@ Developed for Echo Church
 https://echo.church/
 Author: Anthony Lozano
 Email: alozano805@gmail.com
-Date: 01/18/2021
-Version 0.3
+Date: 02/13/2021
+Version 0.4
 Desc: This tool takes in a list of address as a text file and calculates
 the longitude and latitude between the two distances"""
 import json
@@ -16,11 +16,11 @@ import pandas as pd
 from numpy import random
 
 # TODO: Replace key below with proper key from Google API. This is a randomly generated filler key
-APIKEY = "AIzaSyCr3D1cJTK2viWI9kMKf_Lt1DG5i5FkZxE"
+APIKEY = "FOOBAR---KpZyXSvp1MWjhQ"
 distance_dict = {}
 zips_seen = []
 df_zips_seen = pd.read_csv('datasets/input_zip_dist.csv', index_col=["Zip"])
-df_input_address = pd.read_csv('datasets/sample.csv', index_col=["Email"])
+df_input_address = pd.read_csv('datasets/input.csv', index_col=["Email"])
 
 
 def check_if_california(zip_code):
@@ -35,17 +35,17 @@ def check_if_california(zip_code):
     """
     zip_three_digits = ((zip_code[0:3]))
     zip_three_digits = int(zip_three_digits)
+    # True = in California
     if 899 < zip_three_digits < 962:
-        print(f"{zip_code} IS in California")
         return True
+
+    # False = not in California
     else:
-        print(f"{zip_code} is NOT in California")
         return False
 
 
 def check_address(members_address, campus):
     import requests
-
     r = requests.get(f"https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial"
                      f"&origins={members_address}"
                      f"&destinations={campus}"
@@ -75,7 +75,7 @@ def search_new_zip(searching_zip_code, campus_array):
     in_california = check_if_california(searching_zip_code)
     
     campus_dict =  {"NSJ": "1180 Murphy Ave San Jose, CA 95131",
-                    "SSJ": "100 Skyway Dr, San Jose, CA 95111",
+                    "SSJ": "6150 Snell Ave San Jose, CA 95123",
                     "SUN": "1145 E. Arques Ave Sunnyvale, CA 94085",
                     "FRE": "48989 Milmont Dr, Fremont, CA 94538"}
 
@@ -123,20 +123,21 @@ def main():
         f_zip_code = re.findall(r'.*(\d{5}).*?$', each_line)
         f_zip_code = int(f_zip_code[-1])
 
-    try:
-        proper_campus = df_zips_seen.loc[f_zip_code]['Campus']
-        # No need to know the size, it will pick first entry only
-        proper_campus.size
-        proper_campus = proper_campus.iloc[0]
-    
-    # Attribute error means there is one entry and it's not a data frame
-    except AttributeError:
-        pass    
-    except KeyError:
-        proper_campus = search_new_zip(str(f_zip_code), ["NSJ", "SSJ", "SUN", "FRE"])
+        try:
+            proper_campus = df_zips_seen.loc[f_zip_code]['Campus']
+            # No need to know the size, it will pick first entry only
+            proper_campus.size
+            proper_campus = proper_campus.iloc[0]
+        
+        # Attribute error means there is one entry and it's not a data frame
+        except AttributeError:
+            pass    
+ 
+        except KeyError:
+            proper_campus = search_new_zip(str(f_zip_code), ["NSJ", "SSJ", "SUN", "FRE"])
 
-        # Now we have updated the database with the newest info
-    member_campus = df_input_address.iloc[index]["Campus"]= proper_campus
+            # Now we have updated the database with the newest info
+        member_campus = df_input_address.iloc[index]["Campus"]= proper_campus
     df_input_address.to_csv("datasets/output.csv")
 
 
