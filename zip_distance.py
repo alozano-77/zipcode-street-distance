@@ -16,11 +16,11 @@ import pandas as pd
 from numpy import random
 
 # TODO: Replace key below with proper key from Google API. This is a randomly generated filler key
-APIKEY = "BVeRvyYl9Yecr8Oe1tZZrOrQg0Gn15zrKxGa2vl"
+APIKEY = "AIzaSyCr3D1cJTK2viWI9kMKf_Lt1DG5i5FkZxE"
 distance_dict = {}
 zips_seen = []
 df_zips_seen = pd.read_csv('datasets/input_zip_dist.csv', index_col=["Zip"])
-df_input_address = pd.read_csv('echo/newaddresssince1232021.csv', index_col=["Email"])
+df_input_address = pd.read_csv('datasets/sample.csv', index_col=["Email"])
 
 
 def check_if_california(zip_code):
@@ -123,17 +123,22 @@ def main():
         f_zip_code = re.findall(r'.*(\d{5}).*?$', each_line)
         f_zip_code = int(f_zip_code[-1])
 
-        try:
-        # Check if we've seen this zip code before in the input dataset
-            proper_campus = df_zips_seen.loc[f_zip_code]['Campus']
-            # proper_campus = pandas_campus.iloc[0]
-            
-        except KeyError:
-            proper_campus = search_new_zip(str(f_zip_code), ["NSJ", "SSJ", "SUN", "FRE"])
+    try:
+        proper_campus = df_zips_seen.loc[f_zip_code]['Campus']
+        # No need to know the size, it will pick first entry only
+        proper_campus.size
+        proper_campus = proper_campus.iloc[0]
+    
+    # Attribute error means there is one entry and it's not a data frame
+    except AttributeError:
+        pass    
+    except KeyError:
+        proper_campus = search_new_zip(str(f_zip_code), ["NSJ", "SSJ", "SUN", "FRE"])
 
         # Now we have updated the database with the newest info
-        member_campus = df_input_address.iloc[index]["Campus"]= proper_campus
+    member_campus = df_input_address.iloc[index]["Campus"]= proper_campus
     df_input_address.to_csv("datasets/output.csv")
+
 
 
 if __name__ == "__main__":
